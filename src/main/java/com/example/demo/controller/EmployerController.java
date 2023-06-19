@@ -67,6 +67,7 @@ class EmployeeController {
      */
     @PostMapping("/employee")
     public ResponseEntity<Employee> newEmployee(@RequestBody Employee employee) {
+        //create new employee
         Employee newEmployee = employeeRepository
                 .save(employee);
         return new ResponseEntity<>(newEmployee, HttpStatus.OK);
