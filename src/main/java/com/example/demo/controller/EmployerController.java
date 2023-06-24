@@ -3,11 +3,15 @@ package com.example.demo.controller;
 //@CrossOrigin(origins = "http://localhost:3000") //open for specific port
 
 
-import com.example.demo.entity.Employee;
-import com.example.demo.repo.EmployeeRepository;
+import com.example.demo.entity.h2.Usertest;
+import com.example.demo.entity.mysql.Employee;
+import com.example.demo.repo.h2.UserTestRepository;
+import com.example.demo.repo.mysql.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,10 +20,14 @@ import java.util.Optional;
 @CrossOrigin() // open for all ports
 @RequestMapping("crud")
 @RestController
+@EnableTransactionManagement
 class EmployeeController {
 
     @Autowired
     EmployeeRepository employeeRepository;
+
+    @Autowired
+    UserTestRepository userRepository;
 
     /**
      * Get all the employees
@@ -27,9 +35,19 @@ class EmployeeController {
      * @return ResponseEntity
      */
     @GetMapping("/employees")
+    @Transactional("h2TransactionManager")
     public ResponseEntity<List<Employee>> getEmployees() {
+
+        Usertest user = new Usertest();
+        user.setName("John");
+        user.setEmail("john@test.com");
+        user.setAge(20);
+
+
         try {
-            return new ResponseEntity<>(employeeRepository.findAll(), HttpStatus.OK);
+            user = userRepository.save(user);
+            return new ResponseEntity(user,HttpStatus.OK);
+            //return new ResponseEntity<>(employeeRepository.findAll(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
